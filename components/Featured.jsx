@@ -30,11 +30,12 @@ const Featured = () => {
       </h2>
       <div className="mt-5">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {products.map((product, index) => (
+          {products?.map((product, index) => (
             <div key={index} className="relative group">
               <Image
                 src={product.image}
                 className="w-full h-auto object-cover group-hover:brightness-75 transition duration-300"
+                alt={product.title}
               />
               <div className="group-hover:-translate-y-4 transition duration-300 absolute bottom-8 left-8 text-white space-y-2">
                 <p className="font-medium text-xl lg:text-2xl">{product.title}</p>

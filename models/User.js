@@ -11,4 +11,6 @@ const useSchema = new mongoose.Schema(
   { minimize: false }
 );
 
-export const User = mongoose.model("User", useSchema);
+
+export const User =
+  mongoose.models.User || mongoose.model("User", useSchema);

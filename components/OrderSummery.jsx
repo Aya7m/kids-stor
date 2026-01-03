@@ -1,17 +1,43 @@
 "use client";
-import { addressDummyData } from "@/assets/assets";
+
 import { AppContext } from "@/context/AppContext";
+import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 const OrderSummery = () => {
-  const { currency, router, getCartCount,getCartAmount } = useContext(AppContext);
+  const {
+    currency,
+    router,
+    getCartCount,
+    getCartAmount,
+    getToken,
+    user,
+    cartItems,
+    setCartItems,
+  } = useContext(AppContext);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const [userAddresses, setUserAddresses] = useState([]);
 
   const fetchUserAddresses = async () => {
-    setUserAddresses(addressDummyData);
+    try {
+      const token = await getToken();
+      const { data } =await axios.get("/api/user/get-address", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (data.success) {
+        setUserAddresses(data.addresses);
+        if (data.addresses.length > 0) {
+          setSelectedAddress(data.addresses[0]);
+        }
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   const handleAddressSelect = (address) => {
@@ -19,12 +45,13 @@ const OrderSummery = () => {
     setIsDropdownOpen(false);
   };
 
-  const createOrder = async () => {
-
-  }
+  const createOrder = async () => {};
   useEffect(() => {
-    fetchUserAddresses();
-  }, [userAddresses]);
+    if(user){
+      fetchUserAddresses();
+    }
+    
+  }, [user]);
 
   return (
     <div className="w-full md:w-96 bg-gray-500/6 p-5 shadow">
@@ -85,8 +112,7 @@ const OrderSummery = () => {
       </div>
 
       <div className="my-4">
-
-         <div>
+        <div>
           <label className="text-base font-medium uppercase text-gray-600 block mb-2">
             Promo Code
           </label>
@@ -107,7 +133,10 @@ const OrderSummery = () => {
         <div className="space-y-4">
           <div className="flex justify-between text-base font-medium">
             <p className="uppercase text-gray-600">Items {getCartCount()}</p>
-            <p className="text-gray-800">{currency}{getCartAmount()}</p>
+            <p className="text-gray-800">
+              {currency}
+              {getCartAmount()}
+            </p>
           </div>
           <div className="flex justify-between">
             <p className="text-gray-600">Shipping Fee</p>
@@ -115,16 +144,25 @@ const OrderSummery = () => {
           </div>
           <div className="flex justify-between">
             <p className="text-gray-600">Tax (2%)</p>
-            <p className="font-medium text-gray-800">{currency}{Math.floor(getCartAmount() * 0.02)}</p>
+            <p className="font-medium text-gray-800">
+              {currency}
+              {Math.floor(getCartAmount() * 0.02)}
+            </p>
           </div>
           <div className="flex justify-between text-lg md:text-xl font-medium border-t pt-3">
             <p>Total</p>
-            <p>{currency}{getCartAmount() + Math.floor(getCartAmount() * 0.02)}</p>
+            <p>
+              {currency}
+              {getCartAmount() + Math.floor(getCartAmount() * 0.02)}
+            </p>
           </div>
         </div>
       </div>
 
-       <button onClick={createOrder} className="w-full bg-orange-600 text-white py-3 mt-5 hover:bg-orange-700">
+      <button
+        onClick={createOrder}
+        className="w-full bg-orange-600 text-white py-3 mt-5 hover:bg-orange-700"
+      >
         Place Order
       </button>
     </div>

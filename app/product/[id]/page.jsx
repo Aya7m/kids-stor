@@ -36,7 +36,8 @@ const page = () => {
 
 useEffect(() => {
   if (products.length > 0) {
-    const product = products.find((p) => p._id.toString() === id);
+    const product = products.find((p) => p._id === id);
+
     setProductData(product);
     setMinImg(null);
     setSelectSize("");
@@ -141,7 +142,7 @@ useEffect(() => {
           <div className="flex-col">
             <p className="mb-2">Select Size</p>
             <div className="space-x-4">
-              {productData.size.map((item, index) => (
+              {productData.sizes.map((item, index) => (
                 <button
                   onClick={() => setSelectSize(item)}
                   className={`border px-4 py-2 cursor-pointer space-x-3 bg-gray-100 ${
