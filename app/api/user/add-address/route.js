@@ -1,5 +1,5 @@
 import { dbConnection } from "@/config/db";
-import { Addresses } from "@/models/Address";
+import { Address } from "@/models/Address";
 
 import { getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
@@ -11,7 +11,7 @@ export async function POST(request) {
 
     await dbConnection();
 
-    const newAddress = await Addresses.create({
+    const newAddress = await Address.create({
       ...address,
       pincode: Number(address.pincode), // مهم
       userId,

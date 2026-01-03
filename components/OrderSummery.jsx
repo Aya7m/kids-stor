@@ -24,7 +24,7 @@ const OrderSummery = () => {
   const fetchUserAddresses = async () => {
     try {
       const token = await getToken();
-      const { data } =await axios.get("/api/user/get-address", {
+      const { data } = await axios.get("/api/user/get-address", {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (data.success) {
@@ -45,12 +45,73 @@ const OrderSummery = () => {
     setIsDropdownOpen(false);
   };
 
-  const createOrder = async () => {};
+ const createOrder = async () => {
+  try {
+    if (!user) {
+      toast.error("Please login first");
+      return;
+    }
+
+    if (!selectedAddress) {
+      toast.error("please select address");
+      return;
+    }
+
+    if (!cartItems || Object.keys(cartItems).length === 0) {
+      toast.error("cart is empty");
+      return;
+    }
+
+    let cartItemsArray = [];
+
+    for (const productId in cartItems) {
+      for (const size in cartItems[productId]) {
+        const quantity = cartItems[productId][size];
+        if (quantity > 0) {
+          cartItemsArray.push({ product: productId, size, quantity });
+        }
+      }
+    }
+
+    if (cartItemsArray.length === 0) {
+      toast.error("cart is empty");
+      return;
+    }
+
+    const totalAmount =
+      getCartAmount() + Math.floor(getCartAmount() * 0.02);
+
+    const token = await getToken();
+
+    const { data } = await axios.post(
+      "/api/orders/create",
+      {
+        address: selectedAddress._id,
+        items: cartItemsArray,
+        amount: totalAmount,
+      },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    if (data.success) {
+      toast.success(data.message);
+      setCartItems({});
+      router.push("/order-placed");
+    } else {
+      toast.error(data.message);
+    }
+  } catch (error) {
+    toast.error(error.response?.data?.message || error.message);
+  }
+};
+
+
   useEffect(() => {
-    if(user){
+    if (user) {
       fetchUserAddresses();
     }
-    
   }, [user]);
 
   return (

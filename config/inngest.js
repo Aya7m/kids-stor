@@ -2,6 +2,7 @@ import { Inngest } from "inngest";
 import { dbConnection } from "./db.js";
 import { User } from "@/models/User.js";
 import { Order } from "@/models/Order.js";
+import mongoose from "mongoose";
 
 // Create a client to send and receive events
 export const inngest = new Inngest({ id: "quickcart-e-commerce" });
@@ -56,27 +57,63 @@ export const UserDeleted = inngest.createFunction(
 
 // create user order
 
+// export const createUserOrder = inngest.createFunction(
+//   { id: "create-user-order" },
+//   { event: "order/create" },
+//   async ({ event }) => {
+//     await dbConnection();
+
+//     const { userId, items, amount, address } = event.data;
+
+//     if (!userId || !items || items.length === 0) {
+//       throw new Error("Invalid order data");
+//     }
+
+ 
+
+//     const order = await Order.create({
+//       userId: mongoose.Types.ObjectId(userId),
+//       items: items.map((i) => ({
+//         product: mongoose.Types.ObjectId(i.product),
+//         quantity: i.quantity,
+//         size: i.size || null,
+//       })),
+//       amount,
+//       address: mongoose.Types.ObjectId(address),
+//       date: new Date(),
+//     });
+//     return { success: true, orderId: order._id };
+//   }
+// );
+
+
+
+
+
+
+
 export const createUserOrder = inngest.createFunction(
-  {
-    id: "create-user-order",
-    batchEvents: {
-      maxSize: 4,
-      timeout: "5s",
-    },
-  },
+  { id: "create-user-order" },
   { event: "order/create" },
-  async ({ events }) => {
-    const orders = events.map((event) => {
-      return {
-        userId: event.data.userId,
-        items: event.data.items,
-        amount: event.data.amount,
-        address: event.data.address,
-        date: event.data.date,
-      };
+  async ({ event }) => {
+    await dbConnection();
+
+    const { userId, items, amount, address } = event.data;
+
+    if (!userId || !items?.length || !address) {
+      throw new Error("Invalid order data");
+    }
+
+    const order = await Order.create({
+      userId,
+      items, // 👈 متشليش size
+      amount,
+      address,
+      date: new Date(),
     });
-    await dbConnection()
-    await Order.insertMany(orders)
-    return {success:true,process:orders.length}
+
+    return { success: true, orderId: order._id };
   }
 );
+
+

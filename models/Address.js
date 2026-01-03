@@ -12,5 +12,5 @@ const addressSchema = new mongoose.Schema(
   { minimize: false }
 );
 
-export const Addresses =
-  mongoose.models.Addresses || mongoose.model("Addresses", addressSchema);
+export const Address =
+  mongoose.models.Address || mongoose.model("Address", addressSchema);
