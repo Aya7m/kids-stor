@@ -7,10 +7,14 @@ const useSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true },
     imgUrl: { type: String, required: true },
     cartItems: { type: Object, default: {} },
+    wishlist: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
+      },
+    ],
   },
   { minimize: false }
 );
 
-
-export const User =
-  mongoose.models.User || mongoose.model("User", useSchema);
+export const User = mongoose.models.User || mongoose.model("User", useSchema);

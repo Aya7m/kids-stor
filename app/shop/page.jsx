@@ -1,6 +1,7 @@
 "use client";
 
 import { assets } from "@/assets/assets";
+import Loading from "@/components/Loading";
 import Navbar from "@/components/Navbar";
 import ProductCart from "@/components/ProductCart";
 import Searchbar from "@/components/Searchbar";
@@ -16,7 +17,10 @@ const page = () => {
 
   const [category, setCategory] = useState([]);
   const [subcategory, setSubCategory] = useState([]);
+  const[loading,setLoading]=useState(false)
  
+
+  
 
   const toogleCategory = (e) => {
     if (category.includes(e.target.value)) {
@@ -55,12 +59,17 @@ const page = () => {
   };
 
   useEffect(() => {
+   
     applyFilter();
+    
   }, [category, subcategory,search,showSearch]);
 
   useEffect(() => {
+ 
     setFilterProduct(products);
+    
   }, [products]);
+  if(loading) return <Loading/>
   return (
     <>
       <Navbar />
@@ -165,14 +174,14 @@ const page = () => {
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mt-6">
             {filterProduct.map((product, index) => (
-              <Link
-                href={`/product/${product._id}`}
+              <div
+                
                 key={index}
                 className="cursor-pointer space-y-2"
               >
                 <ProductCart product={product} />
-              </Link>
-            ))}
+              </div>
+            ))}:<Loading/>
           </div>
         </div>
       </div>

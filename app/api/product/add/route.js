@@ -31,51 +31,53 @@ export async function POST(request) {
     const files = formData.getAll("images");
 
     if (!files || files.length === 0) {
-  return NextResponse.json({
-    success: false,
-    message: "No files uploaded",
-  });
-}
+      return NextResponse.json({
+        success: false,
+        message: "No files uploaded",
+      });
+    }
 
+    const result = await Promise.all(
+      files.map(async (file) => {
+        const arrayBuffer = await file.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+        return new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            { resource_type: "auto" },
+            (error, result) => {
+              if (error) {
+                reject(error);
+              } else {
+                resolve(result);
+              }
+            }
+          );
+          stream.end(buffer);
+        });
+      })
+    );
 
-    const result= await Promise.all(
-        files.map(async(file)=>{
-            const arrayBuffer= await file.arrayBuffer()
-            const buffer=Buffer.from(arrayBuffer)
-            return new Promise((resolve,reject)=>{
-                const stream=cloudinary.uploader.upload_stream(
-                    {resource_type:'auto'},
-                    (error,result)=>{
-                        if(error){
-                            reject(error)
-                        }else{
-                            resolve(result)
-                        }
-                    }
-                )
-                stream.end(buffer)
+    const image = result.map((result) => result.secure_url);
 
-            })
-        })
-    )
-
-    const image=result.map(result=>result.secure_url)
-
-    await dbConnection()
-    const newProduct=await Product.create({
-        userId,
-        name,
-        description,
-        category,
-        subcategory,
-        price,
-        sizes,
-        offerPrice,
-        image,
-        date:Date.now()
-    })
-    return NextResponse.json({success:true,message:'upload successfully',newProduct})
+    await dbConnection();
+    const newProduct = await Product.create({
+      userId,
+      name,
+      description,
+      category,
+      subcategory,
+      price,
+      sizes,
+      offerPrice,
+      image,
+      date: Date.now(),
+    });
+    return NextResponse.json({
+      success: true,
+      message: "upload successfully",
+      newProduct,
+    });
   } catch (error) {
-    return   NextResponse.json({success:false,message:error.message})
+    return NextResponse.json({ success: false, message: error.message });
   }
 }

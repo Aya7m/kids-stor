@@ -150,7 +150,7 @@ const OrderSummery = () => {
           </button>
 
           {isDropdownOpen && (
-            <ul className="absolute w-full  border shadow-md mt-1 z-10 py-1.5">
+            <ul className="absolute w-full  border shadow-md mt-1 z-10 py-4 my-5">
               {userAddresses.map((address, index) => (
                 <li
                   key={index}

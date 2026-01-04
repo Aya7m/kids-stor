@@ -5,11 +5,12 @@ import Navbar from "@/components/Navbar";
 import ProductCart from "@/components/ProductCart";
 import Searchbar from "@/components/Searchbar";
 import { AppContext } from "@/context/AppContext";
+
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import React, { useContext, useEffect, useState } from "react";
 
-const page = () => {
+const Page = () => {
   const { id } = useParams();
   const { products, addToCart } = useContext(AppContext);
   const navigate = useRouter();
@@ -17,40 +18,24 @@ const page = () => {
   const [minImg, setMinImg] = useState(null);
   const [selectSize, setSelectSize] = useState("");
 
-  // const fetchProductData = async () => {
-  //   const product = products.find((product) => product._id === id);
-  //   setProductData(product);
-  // };
-  // useEffect(() => {
-  //   if (products.length > 0) {
-  //     const product = products.find((p) => p._id === id);
-  //     setProductData(product);
-  //     setMinImg(null); // reset الصورة لما البرودكت يتغير
-  //     setSelectSize("");
-  //   }
-  // }, [id, products]);
+  const [productData, setProductData] = useState(null);
 
-  // console.log(productData);
+  useEffect(() => {
+    if (products.length > 0) {
+      const product = products.find((p) => p._id === id);
 
- const [productData, setProductData] = useState(null);
-
-useEffect(() => {
-  if (products.length > 0) {
-    const product = products.find((p) => p._id === id);
-
-    setProductData(product);
-    setMinImg(null);
-    setSelectSize("");
-  }
-}, [id, products]);
-
+      setProductData(product);
+      setMinImg(null);
+      setSelectSize("");
+    }
+  }, [id, products]);
 
   if (!productData) return <Loading />;
 
   return productData ? (
     <div key={id}>
       <Navbar />
-      <Searchbar/>
+      <Searchbar />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-12">
         {/* images */}
         <div className="flex-1">
@@ -160,7 +145,6 @@ useEffect(() => {
             <button
               onClick={() => {
                 addToCart(productData._id, selectSize);
-             
               }}
               className="w-full py-3.5 bg-gray-100 text-gray-800/80 hover:bg-gray-200 transition"
             >
@@ -169,7 +153,7 @@ useEffect(() => {
             <button
               onClick={() => {
                 addToCart(productData._id, selectSize);
-                 navigate.push('/cart')
+                navigate.push("/cart");
               }}
               className="w-full py-3.5 bg-[var(--secondary-color)] text-white hover:bg-orange-600 transition"
             >
@@ -203,4 +187,4 @@ useEffect(() => {
   );
 };
 
-export default page;
+export default Page;

@@ -57,34 +57,6 @@ export const UserDeleted = inngest.createFunction(
 
 // create user order
 
-// export const createUserOrder = inngest.createFunction(
-//   { id: "create-user-order" },
-//   { event: "order/create" },
-//   async ({ event }) => {
-//     await dbConnection();
-
-//     const { userId, items, amount, address } = event.data;
-
-//     if (!userId || !items || items.length === 0) {
-//       throw new Error("Invalid order data");
-//     }
-
- 
-
-//     const order = await Order.create({
-//       userId: mongoose.Types.ObjectId(userId),
-//       items: items.map((i) => ({
-//         product: mongoose.Types.ObjectId(i.product),
-//         quantity: i.quantity,
-//         size: i.size || null,
-//       })),
-//       amount,
-//       address: mongoose.Types.ObjectId(address),
-//       date: new Date(),
-//     });
-//     return { success: true, orderId: order._id };
-//   }
-// );
 
 
 

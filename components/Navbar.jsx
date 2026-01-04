@@ -2,13 +2,13 @@
 import { BoxIcon, CartIcon, HomeIcon } from "@/assets/assets";
 import { AppContext } from "@/context/AppContext";
 import { useClerk, UserButton } from "@clerk/nextjs";
-import { Search, ShoppingBag } from "lucide-react";
+import { Heart, Search, ShoppingBag } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useContext } from "react";
 
 const Navbar = () => {
-  const { setShowSearch, getCartCount, isSeller, router, user } =
+  const { setShowSearch, getCartCount, isSeller, router, user,wishlistCount } =
     useContext(AppContext);
   const { openSignIn } = useClerk();
 
@@ -49,6 +49,15 @@ const Navbar = () => {
             className="cursor-pointer"
             onClick={() => setShowSearch(true)}
           />
+           <Link href="/wishlist" className="relative">
+      <Heart className="w-6 h-6" />
+
+      {wishlistCount > 0 && (
+        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+          {wishlistCount}
+        </span>
+      )}
+    </Link>
           <Link href={"/cart"} className="group relative">
             <p className="absolute -top-5 -right-5 px-2 rounded-full bg-[var(--secondary-color)] text-white">
               {getCartCount()}

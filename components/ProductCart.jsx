@@ -1,14 +1,49 @@
-import React from "react";
+"use client";
+import React, { useContext } from "react";
 import { Heart } from "lucide-react";
 import { assets } from "@/assets/assets";
 import Image from "next/image";
+import axios from "axios";
+import { AppContext } from "@/context/AppContext";
+import toast from "react-hot-toast";
+import Link from "next/link";
 const ProductCart = ({ product }) => {
+  const { getToken,fetchWishlist } = useContext(AppContext);
+  const toggleWishlist = async (productId) => {
+    const token = await getToken();
+
+    const { data } = await axios.post(
+      "/api/wishlist/add",
+      { productId },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    if (data.success) {
+      toast.success(data.message);
+      fetchWishlist();
+    }
+  };
   return (
     <div className="group relative">
       <div className="flex flex-col items-center  gap-3 border border-[var(--secondary-color)] p-5 md:px-8 lg:px-12 group-hover:hover:scale-105 group-hover:shadow-lg  rounded-lg transition-all duration-300 ease-in-out">
         <div className="bg-white rounded-lg w-full relative">
-          <img src={product.image[0]} alt="img" className="h-auto w-full object-cover" />
-          <button className="absolute -top-2 -right-2 bg-[var(--primary-color)] p-2 rounded-full shadow-md">
+          <Link href={`/product/${product._id}`}>
+            <Image
+              src={product.image[0]}
+              width={300}
+              height={300}
+              alt={product.name}
+            />
+          </Link>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleWishlist(product._id);
+            }}
+            className="absolute -top-2 -right-2 bg-[var(--primary-color)] p-2 rounded-full"
+          >
             <Heart className="h-4 w-4 text-white hover:text-red-500" />
           </button>
         </div>
